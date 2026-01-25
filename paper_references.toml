@@ -1,0 +1,18 @@
+# Paper References for Federal Reserve Yield Curve Module
+
+[Gurkaynak2007]
+title = "The U.S. Treasury yield curve: 1961 to the present"
+authors = "Refet S. Gurkaynak, Brian Sack, and Jonathan H. Wright"
+year = 2007
+journal = "Journal of Monetary Economics"
+volume = "54"
+issue = "8"
+pages = "2291-2304"
+description = "The paper estimates the U.S. Treasury yield curve using a parametric model, providing daily zero-coupon yields from 1961 to the present."
+empirical_facts = [
+    "The Svensson (1994) model provides a good fit to the Treasury yield curve.",
+    "Zero-coupon yields are estimated for maturities from 1 to 30 years.",
+    "The data is updated daily by the Federal Reserve.",
+]
+data_sources = ["Federal Reserve H.15 release", "Treasury market data"]
+methodology = "Svensson (1994) parametric model fitted to off-the-run Treasury securities"
