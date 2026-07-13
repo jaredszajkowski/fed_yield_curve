@@ -423,11 +423,28 @@ def _demo():
     return df
 
 
+# Cross-section dates used for the GSW (2007) Figure 2 and Figure 6 comparisons.
+GSW_COMPARISON_DATES = ["2005-05-24", "2006-05-09"]
+
+
 if __name__ == "__main__":
-    # This pipeline only needs the CRSP Treasury issue-description table
-    # (tfz_iss) for GSW Figure 1 — the per-security issue/maturity dates. The
-    # daily time series (tfz_dly) and consolidated tables are pulled by the
-    # sibling crsp_treasury pipeline, not here.
+    # Issue-description table (tfz_iss): per-security issue/maturity dates, used
+    # for GSW Figure 1 (outstanding securities) and to attach coupon/maturity to
+    # the daily quotes below.
     df = pull_CRSP_treasury_info(wrds_username=WRDS_USERNAME)
-    path = DATA_DIR / "CRSP_TFZ_INFO.parquet"
-    df.to_parquet(path)
+    df.to_parquet(DATA_DIR / "CRSP_TFZ_INFO.parquet")
+
+    # Daily quotes (tfz_dly) on just the two GSW cross-section dates, for the
+    # actual/predicted-yield scatter in Figures 2 and 6. Only these dates are
+    # needed here; the full daily series is pulled by the sibling crsp_treasury
+    # pipeline, not this one.
+    daily = pd.concat(
+        [
+            pull_CRSP_treasury_daily(
+                start_date=d, end_date=d, wrds_username=WRDS_USERNAME
+            )
+            for d in GSW_COMPARISON_DATES
+        ],
+        ignore_index=True,
+    )
+    daily.to_parquet(DATA_DIR / "CRSP_TFZ_DAILY.parquet")

@@ -68,6 +68,7 @@ def task_pull():
         "actions": ["python ./src/pull_CRSP_treasury.py"],
         "targets": [
             DATA_DIR / "CRSP_TFZ_INFO.parquet",
+            DATA_DIR / "CRSP_TFZ_DAILY.parquet",
         ],
         "file_dep": ["./src/pull_CRSP_treasury.py"],
         "clean": [],
@@ -97,6 +98,7 @@ notebook_tasks = {
         "file_dep": [
             DATA_DIR / "ftsfr_treas_yield_curve_zero_coupon.parquet",
             DATA_DIR / "CRSP_TFZ_INFO.parquet",
+            DATA_DIR / "CRSP_TFZ_DAILY.parquet",
         ],
         "targets": [],
     },
