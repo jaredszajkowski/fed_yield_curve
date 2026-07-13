@@ -18,9 +18,9 @@ os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
 
 # fmt: off
 def jupyter_execute_notebook(notebook_path):
-    return f"jupyter nbconvert --execute --to notebook --ClearMetadataPreprocessor.enabled=True --inplace {notebook_path}"
+    return f"jupyter nbconvert --execute --to notebook --ClearMetadataPreprocessor.enabled=True --inplace '{notebook_path}'"
 def jupyter_to_html(notebook_path, output_dir=OUTPUT_DIR):
-    return f"jupyter nbconvert --to html --output-dir={output_dir} {notebook_path}"
+    return f"jupyter nbconvert --to html --output-dir='{output_dir}' '{notebook_path}'"
 # fmt: on
 
 
@@ -29,9 +29,9 @@ def mv(from_path, to_path):
     to_path = Path(to_path)
     to_path.mkdir(parents=True, exist_ok=True)
     if OS_TYPE == "nix":
-        command = f"mv {from_path} {to_path}"
+        command = f"mv '{from_path}' '{to_path}'"
     else:
-        command = f"move {from_path} {to_path}"
+        command = f"move '{from_path}' '{to_path}'"
     return command
 
 
@@ -49,7 +49,8 @@ def task_config():
 
 def task_pull():
     """Pull Federal Reserve yield curve data"""
-    return {
+    yield {
+        "name": "fed_yield_curve",
         "actions": [
             f"python ./src/pull_fed_yield_curve.py",
         ],
@@ -60,6 +61,15 @@ def task_pull():
         "file_dep": [
             f"./src/pull_fed_yield_curve.py",
         ],
+        "clean": [],
+    }
+    yield {
+        "name": "crsp_treasury",
+        "actions": ["python ./src/pull_CRSP_treasury.py"],
+        "targets": [
+            DATA_DIR / "CRSP_TFZ_INFO.parquet",
+        ],
+        "file_dep": ["./src/pull_CRSP_treasury.py"],
         "clean": [],
     }
 
@@ -86,6 +96,7 @@ notebook_tasks = {
         "path": "./src/summary_fed_yield_curve_ipynb.py",
         "file_dep": [
             DATA_DIR / "ftsfr_treas_yield_curve_zero_coupon.parquet",
+            DATA_DIR / "CRSP_TFZ_INFO.parquet",
         ],
         "targets": [],
     },
