@@ -92,6 +92,22 @@ def task_format():
     }
 
 
+def task_tests():
+    """Run the pytest suite (GSW verification against the pulled data)."""
+    return {
+        "actions": ["python -m pytest ./src/test_gsw_svensson.py -v"],
+        "file_dep": [
+            "./src/test_gsw_svensson.py",
+            "./src/gsw_pricing.py",
+            "./src/pull_fed_yield_curve.py",
+            DATA_DIR / "fed_yield_curve_all.parquet",
+        ],
+        "task_dep": ["pull:fed_yield_curve"],
+        "verbosity": 2,
+        "uptodate": [False],
+    }
+
+
 notebook_tasks = {
     "summary_fed_yield_curve_ipynb": {
         "path": "./src/summary_fed_yield_curve_ipynb.py",
@@ -122,6 +138,7 @@ def task_run_notebooks():
                 jupyter_to_html(notebook_path),
                 mv(notebook_path, OUTPUT_DIR),
             ],
+            "task_dep": ["tests"],
             "file_dep": [
                 pyfile_path,
                 *notebook_tasks[notebook]["file_dep"],
@@ -147,7 +164,7 @@ def task_generate_charts():
             OUTPUT_DIR / "yield_curve_replication.html",
         ],
         "verbosity": 2,
-        "task_dep": ["format"],
+        "task_dep": ["format", "tests"],
     }
 
 
